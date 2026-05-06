@@ -193,7 +193,7 @@ controls_panel = html.Div([
         value='basis',
         children=[
             dcc.Tab(
-                label='Basis States',
+                label='Basic',
                 value='basis',
                 style=TAB_STYLE,
                 selected_style=TAB_SELECTED_STYLE,
@@ -202,19 +202,22 @@ controls_panel = html.Div([
                         dcc.RadioItems(
                             id='basis-radio',
                             options=[
-                                {'label': ' σ+', 'value': 'sigma_plus'},
-                                {'label': ' π',  'value': 'pi'},
-                                {'label': ' σ−', 'value': 'sigma_minus'},
+                                {'label': ' RHC', 'value': 'sigma_plus'},
+                                {'label': ' V',   'value': 'pi'},
+                                {'label': ' LHC', 'value': 'sigma_minus'},
                             ],
                             value='sigma_plus',
                             labelStyle={
                                 'display': 'inline-block',
-                                'marginRight': '14px',
                                 'color': '#E0E0E0',
                                 'fontSize': '13px',
                                 'cursor': 'pointer',
                             },
-                            style={'marginTop': '10px'},
+                            style={
+                                'marginTop': '10px',
+                                'display': 'flex',
+                                'justifyContent': 'space-around',
+                            },
                         ),
                     ]),
                 ],

@@ -7,5 +7,5 @@
 7. Phase legend for the density matrix
 8. Different color theme
 9. Clearer color for polarization ellipse
-10. Change Basic input states from \pi, \sigma_+/- to Vertical, LHC, and RHC
+10. ~~Change Basic input states from \pi, \sigma_+/- to Vertical, LHC, and RHC~~
 

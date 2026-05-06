@@ -870,9 +870,10 @@ def make_poincare_figure(result):
 
     Traces:
       1. Unit sphere surface (low opacity)
-      2. S1, S2, S3 axis lines with pole labels
-      3. Current state: bold point on sphere surface
-      4. Line from origin to point
+      2. Principal great circles (equator, S1-S3, S2-S3 planes)
+      3. S1, S2, S3 axis lines with pole labels
+      4. Current state: bold point on sphere surface
+      5. Line from origin to point
 
     Returns a go.Figure.
     """
@@ -885,6 +886,25 @@ def make_poincare_figure(result):
     traces.append(_sphere_surface_trace(
         radius=1.0, color='#334466', opacity=0.15,
         name='Poincaré sphere'))
+
+    # ── Principal great circles ───────────────────────────────────────────────
+    _t = linspace(0, 2 * math.pi, 200)
+    _c = [math.cos(t) for t in _t]
+    _s = [math.sin(t) for t in _t]
+    _z = [0.0] * len(_t)
+    great_circle_specs = [
+        (_c, _s, _z),   # equator  (S1-S2 plane)
+        (_c, _z, _s),   # S1-S3 plane
+        (_z, _c, _s),   # S2-S3 plane
+    ]
+    for gx, gy, gz in great_circle_specs:
+        traces.append(go.Scatter3d(
+            x=gx, y=gy, z=gz,
+            mode='lines',
+            line=dict(color='#4A6080', width=1),
+            showlegend=False,
+            hoverinfo='none',
+        ))
 
     # ── Axis lines with pole labels ───────────────────────────────────────────
     pole_axes = [
