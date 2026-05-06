@@ -8,4 +8,5 @@
 8. Different color theme
 9. Clearer color for polarization ellipse
 10. ~~Change Basic input states from \pi, \sigma_+/- to Vertical, LHC, and RHC~~
-
+11. Display Stokes parameters of the input polarization state
+12. Condense sliders to eliminate the scroll bar.
