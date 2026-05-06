@@ -228,20 +228,27 @@ def jones_matrix_qwp(fast_axis_angle_rad):
 
     where R(α) = [[cosα, sinα], [-sinα, cosα]] rotates into fast-axis frame.
 
-    Expanding explicitly (global phase dropped, physically irrelevant):
-        J[0][0] = cos²α + i sin²α
-        J[0][1] = (1-i) sinα cosα
-        J[1][0] = (1-i) sinα cosα
-        J[1][1] = sin²α + i cos²α
+    Expanding explicitly (global phase dropped, physically irrelevant),
+    then post-multiplied by diag(1, −i) so that α=0 → identity:
+
+        J[0][0] =  cos²α + i sin²α
+        J[0][1] = −(1+i) sinα cosα      ← c(sc,−sc)·(−i) = c(−sc,−sc)
+        J[1][0] =  (1−i) sinα cosα
+        J[1][1] =  cos²α − i sin²α      ← c(sa2,ca2)·(−i) = c(ca2,−sa2)
+
+    The post-multiplication by diag(1, −i) shifts the ê₂ output by −π/2,
+    making the identity transformation correspond to α=0 (fast axis along
+    ê₁). This preserves unitarity and the full SU(2) coverage of the
+    QWP–HWP–QWP chain.
 
     Returns a 2x2 complex matrix (nested list of [re,im] pairs).
 
     JS: function jonesMatrixQwp(alpha) {
             const ca = Math.cos(alpha), sa = Math.sin(alpha);
-            const ca2 = ca*ca, sa2 = sa*sa, scP = sa*ca;
+            const ca2 = ca*ca, sa2 = sa*sa, sc = sa*ca;
             return [
-                [[ca2, sa2],    [scP*(1), -scP]],
-                [[scP,  -scP],  [sa2, ca2]],
+                [[ca2, sa2],   [-sc, -sc]],
+                [[sc,  -sc],   [ca2, -sa2]],
             ];
         }
     """
@@ -251,9 +258,12 @@ def jones_matrix_qwp(fast_axis_angle_rad):
     sa2 = sa * sa
     sc  = sa * ca   # sinα cosα
 
+    # Post-multiply by diag(1, -i): c(x,y)·(-i) = c(y, -x)
+    #   J[0][1]: c(sc, -sc)  → c(-sc, -sc)
+    #   J[1][1]: c(sa2, ca2) → c(ca2, -sa2)
     return [
-        [ c(ca2, sa2), c(sc, -sc)  ],
-        [ c(sc, -sc),  c(sa2, ca2) ],
+        [ c(ca2, sa2), c(-sc, -sc)  ],
+        [ c(sc, -sc),  c(ca2, -sa2) ],
     ]
 
 
