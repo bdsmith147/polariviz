@@ -387,6 +387,9 @@ app.layout = html.Div([
     State('plot-3d', 'relayoutData'),
     # Density matrix camera (for depth-sorting bars)
     State('plot-density', 'relayoutData'),
+    # Poincaré sphere camera (for preserving orientation)
+    State('plot-poincare', 'relayoutData'),
+    State('plot-poincare', 'figure'),
     prevent_initial_call='initial_duplicate',
 )
 def update_all(
@@ -398,6 +401,8 @@ def update_all(
     current_3d,
     relayout_data,
     density_relayout,
+    poincare_relayout,
+    current_poincare,
 ):
     # ── Visibility flags ──────────────────────────────────────────────────────
     show_ellipse = 'ellipse' in (visibility or [])
@@ -437,6 +442,13 @@ def update_all(
         fig_density.update_layout(scene_camera=dm_camera)
     fig_ellipse  = make_ellipse_figure(result)
     fig_poincare = make_poincare_figure(result)
+    poincare_camera = None
+    if poincare_relayout and 'scene.camera' in poincare_relayout:
+        poincare_camera = poincare_relayout['scene.camera']
+    elif current_poincare and current_poincare.get('layout', {}).get('scene', {}).get('camera'):
+        poincare_camera = current_poincare['layout']['scene']['camera']
+    if poincare_camera:
+        fig_poincare.update_layout(scene_camera=poincare_camera)
 
     return (
         fig_3d, fig_level, fig_density, fig_ellipse, fig_poincare,
