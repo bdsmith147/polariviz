@@ -61,8 +61,8 @@ SLIDERS = {
 }
 
 
-def _slider_block(slider_id, spec):
-    """Return a labelled slider as a Div — label + number input + dcc.Slider.
+def _slider_block(slider_id, spec, margin_bottom='12px'):
+    """Return a labelled horizontal slider as a Div.
 
     JS conversion:
         <div class="slider-block">
@@ -108,7 +108,62 @@ def _slider_block(slider_id, spec):
             tooltip={'placement': 'bottom', 'always_visible': False},
             updatemode='drag',
         ),
-    ], style={'marginBottom': '12px'})
+    ], style={'marginBottom': margin_bottom})
+
+
+def _vertical_slider_block(slider_id, spec, height=160):
+    """Return a labelled vertical slider as a Div — label + number input above,
+    vertical dcc.Slider below.
+
+    JS conversion: rotate a horizontal <input type="range"> 90° with CSS.
+    """
+    _input_style = {
+        'width': '48px',
+        'backgroundColor': '#0D1B2A',
+        'color': '#E0E0E0',
+        'border': '1px solid #2A2A4A',
+        'borderRadius': '4px',
+        'fontSize': '12px',
+        'fontWeight': 'bold',
+        'textAlign': 'center',
+        'padding': '1px 4px',
+    }
+    return html.Div([
+        html.Div(spec['label'],
+                 style={'color': '#B0B0C0', 'fontSize': '11px',
+                        'textAlign': 'center', 'marginBottom': '4px'}),
+        html.Div([
+            dcc.Input(
+                id=f'input-{slider_id}',
+                type='number',
+                value=spec['value'],
+                min=spec['min'],
+                max=spec['max'],
+                step=spec['step'],
+                debounce=True,
+                style=_input_style,
+            ),
+            html.Span('°', style={'color': '#B0B0C0', 'fontSize': '12px',
+                                  'marginLeft': '2px'}),
+        ], style={'display': 'flex', 'alignItems': 'center',
+                  'justifyContent': 'center', 'marginBottom': '6px'}),
+        dcc.Slider(
+            id=f'slider-{slider_id}',
+            min=spec['min'],
+            max=spec['max'],
+            step=spec['step'],
+            value=spec['value'],
+            marks=None,
+            vertical=True,
+            verticalHeight=height,
+            tooltip={'placement': 'right', 'always_visible': False},
+            updatemode='drag',
+        ),
+    ], style={
+        'display': 'flex',
+        'flexDirection': 'column',
+        'alignItems': 'center',
+    })
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -188,15 +243,38 @@ controls_panel = html.Div([
                 selected_style=TAB_SELECTED_STYLE,
                 children=[
                     html.Div([
-                        html.Div('Beam Direction', style=STYLE_SECTION_LABEL),
-                        _slider_block('theta',  SLIDERS['theta']),
-                        _slider_block('phi',    SLIDERS['phi']),
-                        _slider_block('chi',    SLIDERS['chi']),
-
-                        html.Div('Quantization Axis', style=STYLE_SECTION_LABEL),
-                        _slider_block('theta_b', SLIDERS['theta_b']),
-                        _slider_block('phi_b',   SLIDERS['phi_b']),
-                    ], style={'paddingTop': '8px'}),
+                        # Left column: Beam Direction (~60%)
+                        html.Div([
+                            html.Div('Beam Direction', style=STYLE_SECTION_LABEL),
+                            _slider_block('theta', SLIDERS['theta'], margin_bottom='20px'),
+                            _slider_block('phi',   SLIDERS['phi'],   margin_bottom='20px'),
+                            _slider_block('chi',   SLIDERS['chi'],   margin_bottom='4px'),
+                        ], style={
+                            'width': '60%',
+                            'paddingRight': '10px',
+                            'boxSizing': 'border-box',
+                        }),
+                        # Right column: Quantization Axis (~40%) — vertical sliders
+                        html.Div([
+                            html.Div('Quantization Axis', style=STYLE_SECTION_LABEL),
+                            html.Div([
+                                _vertical_slider_block('theta_b', SLIDERS['theta_b']),
+                                _vertical_slider_block('phi_b',   SLIDERS['phi_b']),
+                            ], style={
+                                'display': 'flex',
+                                'flexDirection': 'row',
+                                'justifyContent': 'space-around',
+                                'paddingTop': '4px',
+                            }),
+                        ], style={
+                            'width': '40%',
+                            'boxSizing': 'border-box',
+                        }),
+                    ], style={
+                        'display': 'flex',
+                        'flexDirection': 'row',
+                        'paddingTop': '8px',
+                    }),
                 ],
             ),
 
@@ -271,8 +349,7 @@ controls_panel = html.Div([
         style={'marginBottom': '0px'},
     ),
 
-], style={**STYLE_PANEL, 'width': '38%', 'boxSizing': 'border-box',
-          'overflowY': 'auto', 'maxHeight': '62vh'})
+], style={**STYLE_PANEL, 'width': '38%', 'boxSizing': 'border-box'})
 
 # ── 3D scene ──────────────────────────────────────────────────────────────────
 scene_panel = html.Div([
