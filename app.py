@@ -429,6 +429,20 @@ app.layout = html.Div([
         tabbed_panel,
     ], style=STYLE_ROW),
 
+    # Footer
+    html.Div(
+        '© 2026 Benjamin Smith',
+        style={
+            'textAlign': 'center',
+            'color': '#555570',
+            'fontSize': '11px',
+            'paddingTop': '8px',
+            'paddingBottom': '4px',
+            'borderTop': '1px solid #2A2A4A',
+            'marginTop': '4px',
+        },
+    ),
+
 ], style=STYLE_PAGE)
 
 
