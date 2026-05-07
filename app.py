@@ -172,94 +172,103 @@ controls_panel = html.Div([
 
     html.H3('PolariViz', style={
         'color': '#7EC8E3', 'fontSize': '16px',
-        'margin': '0 0 12px 0', 'letterSpacing': '0.1em',
+        'margin': '0 0 8px 0', 'letterSpacing': '0.1em',
     }),
 
-    # ── Beam direction ────────────────────────────────────────────────────────
-    html.Div('Beam Direction', style=STYLE_SECTION_LABEL),
-    _slider_block('theta',  SLIDERS['theta']),
-    _slider_block('phi',    SLIDERS['phi']),
-    _slider_block('chi',    SLIDERS['chi']),
-
-    # ── Quantization axis ─────────────────────────────────────────────────────
-    html.Div('Quantization Axis', style=STYLE_SECTION_LABEL),
-    _slider_block('theta_b', SLIDERS['theta_b']),
-    _slider_block('phi_b',   SLIDERS['phi_b']),
-
-    # ── Polarization input (tabbed) ───────────────────────────────────────────
-    html.Div('Polarization Input', style=STYLE_SECTION_LABEL),
     dcc.Tabs(
-        id='pol-tabs',
-        value='basis',
+        id='controls-tabs',
+        value='geometry',
         children=[
+
+            # ── Tab 1: Geometry ───────────────────────────────────────────────
             dcc.Tab(
-                label='Basic',
-                value='basis',
+                label='Geometry',
+                value='geometry',
                 style=TAB_STYLE,
                 selected_style=TAB_SELECTED_STYLE,
                 children=[
                     html.Div([
-                        dcc.RadioItems(
-                            id='basis-radio',
-                            options=[
-                                {'label': ' RHC', 'value': 'sigma_plus'},
-                                {'label': ' V',   'value': 'pi'},
-                                {'label': ' LHC', 'value': 'sigma_minus'},
+                        html.Div('Beam Direction', style=STYLE_SECTION_LABEL),
+                        _slider_block('theta',  SLIDERS['theta']),
+                        _slider_block('phi',    SLIDERS['phi']),
+                        _slider_block('chi',    SLIDERS['chi']),
+
+                        html.Div('Quantization Axis', style=STYLE_SECTION_LABEL),
+                        _slider_block('theta_b', SLIDERS['theta_b']),
+                        _slider_block('phi_b',   SLIDERS['phi_b']),
+                    ], style={'paddingTop': '8px'}),
+                ],
+            ),
+
+            # ── Tab 2: Polarization Input ─────────────────────────────────────
+            dcc.Tab(
+                label='Polarization Input',
+                value='polarization',
+                style=TAB_STYLE,
+                selected_style=TAB_SELECTED_STYLE,
+                children=[
+                    html.Div([
+                        dcc.Tabs(
+                            id='pol-tabs',
+                            value='basis',
+                            children=[
+                                dcc.Tab(
+                                    label='Basic',
+                                    value='basis',
+                                    style=TAB_STYLE,
+                                    selected_style=TAB_SELECTED_STYLE,
+                                    children=[
+                                        html.Div([
+                                            dcc.RadioItems(
+                                                id='basis-radio',
+                                                options=[
+                                                    {'label': ' RHC', 'value': 'sigma_plus'},
+                                                    {'label': ' V',   'value': 'pi'},
+                                                    {'label': ' LHC', 'value': 'sigma_minus'},
+                                                ],
+                                                value='sigma_plus',
+                                                labelStyle={
+                                                    'display': 'inline-block',
+                                                    'color': '#E0E0E0',
+                                                    'fontSize': '13px',
+                                                    'cursor': 'pointer',
+                                                },
+                                                style={
+                                                    'marginTop': '10px',
+                                                    'display': 'flex',
+                                                    'justifyContent': 'space-around',
+                                                },
+                                            ),
+                                        ]),
+                                    ],
+                                ),
+                                dcc.Tab(
+                                    label='Waveplate Chain',
+                                    value='waveplate',
+                                    style=TAB_STYLE,
+                                    selected_style=TAB_SELECTED_STYLE,
+                                    children=[
+                                        html.Div([
+                                            html.Div(
+                                                '↓ vertical  →  QWP₁  →  HWP  →  QWP₂',
+                                                style={'color': '#7EC8E3', 'fontSize': '11px',
+                                                       'marginTop': '8px', 'marginBottom': '4px'},
+                                            ),
+                                            _slider_block('alpha1', SLIDERS['alpha1']),
+                                            _slider_block('alpha2', SLIDERS['alpha2']),
+                                            _slider_block('alpha3', SLIDERS['alpha3']),
+                                        ]),
+                                    ],
+                                ),
                             ],
-                            value='sigma_plus',
-                            labelStyle={
-                                'display': 'inline-block',
-                                'color': '#E0E0E0',
-                                'fontSize': '13px',
-                                'cursor': 'pointer',
-                            },
-                            style={
-                                'marginTop': '10px',
-                                'display': 'flex',
-                                'justifyContent': 'space-around',
-                            },
+                            style={'marginBottom': '0px'},
                         ),
-                    ]),
+                    ], style={'paddingTop': '8px'}),
                 ],
             ),
-            dcc.Tab(
-                label='Waveplate Chain',
-                value='waveplate',
-                style=TAB_STYLE,
-                selected_style=TAB_SELECTED_STYLE,
-                children=[
-                    html.Div([
-                        html.Div(
-                            '↓ vertical  →  QWP₁  →  HWP  →  QWP₂',
-                            style={'color': '#7EC8E3', 'fontSize': '11px',
-                                   'marginTop': '8px', 'marginBottom': '4px'},
-                        ),
-                        _slider_block('alpha1', SLIDERS['alpha1']),
-                        _slider_block('alpha2', SLIDERS['alpha2']),
-                        _slider_block('alpha3', SLIDERS['alpha3']),
-                    ]),
-                ],
-            ),
+
         ],
         style={'marginBottom': '0px'},
-    ),
-
-    # ── Visibility checkboxes ─────────────────────────────────────────────────
-    html.Div('Visibility', style=STYLE_SECTION_LABEL),
-    dcc.Checklist(
-        id='visibility-checks',
-        options=[
-            {'label': ' Show polarization ellipse', 'value': 'ellipse'},
-            {'label': ' Show ê₁, ê₂ axes',          'value': 'eaxes'},
-        ],
-        value=['ellipse', 'eaxes'],
-        labelStyle={
-            'display': 'block',
-            'color': '#E0E0E0',
-            'fontSize': '12px',
-            'marginBottom': '6px',
-            'cursor': 'pointer',
-        },
     ),
 
 ], style={**STYLE_PANEL, 'width': '38%', 'boxSizing': 'border-box',
@@ -383,8 +392,6 @@ app.layout = html.Div([
     Input('slider-alpha1',  'value'),
     Input('slider-alpha2',  'value'),
     Input('slider-alpha3',  'value'),
-    # Visibility
-    Input('visibility-checks', 'value'),
     # Current 3D figure state (for preserving camera)
     State('plot-3d', 'figure'),
     State('plot-3d', 'relayoutData'),
@@ -400,17 +407,12 @@ def update_all(
     theta_b, phi_b,
     pol_mode, basis_state,
     alpha1, alpha2, alpha3,
-    visibility,
     current_3d,
     relayout_data,
     density_relayout,
     poincare_relayout,
     current_poincare,
 ):
-    # ── Visibility flags ──────────────────────────────────────────────────────
-    show_ellipse = 'ellipse' in (visibility or [])
-    show_eaxes   = 'eaxes'   in (visibility or [])
-
     # ── Run physics pipeline ──────────────────────────────────────────────────
     # JS conversion: this block becomes the body of updateAll() in app.js
     result = compute_all(
@@ -428,7 +430,7 @@ def update_all(
 
     # ── Build figures ─────────────────────────────────────────────────────────
     # JS conversion: each make_*_figure() call becomes its JS equivalent
-    fig_3d       = make_3d_figure(result, show_ellipse, show_eaxes)
+    fig_3d       = make_3d_figure(result)
     camera = None
     if relayout_data and 'scene.camera' in relayout_data:
         camera = relayout_data['scene.camera']
