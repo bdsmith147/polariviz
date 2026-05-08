@@ -27,6 +27,7 @@ from physics import compute_all
 from traces import (
     make_3d_figure,
     make_level_figure,
+    make_amplitudes_figure,
     make_density_figure,
     make_ellipse_figure,
     make_poincare_figure,
@@ -176,7 +177,10 @@ STYLE_PAGE = {
     'color': '#E0E0E0',
     'fontFamily': 'Inter, Segoe UI, sans-serif',
     'padding': '12px',
-    'minHeight': '100vh',
+    'height': '100vh',
+    'boxSizing': 'border-box',
+    'display': 'flex',
+    'flexDirection': 'column',
 }
 
 STYLE_ROW = {
@@ -355,11 +359,11 @@ controls_panel = html.Div([
 scene_panel = html.Div([
     dcc.Graph(
         id='plot-3d',
-        style={'height': '60vh'},
+        style={'height': '100%'},
         config={'displayModeBar': True, 'scrollZoom': False, 'modeBarButtonsToRemove': ['zoom3d', 'pan3d']},
     ),
 ], style={**STYLE_PANEL, 'width': '60%', 'boxSizing': 'border-box',
-          'padding': '6px'})
+          'padding': '6px', 'display': 'flex', 'flexDirection': 'column'})
 
 # ── Bottom row: level diagram ─────────────────────────────────────────────────
 level_panel = html.Div([
@@ -373,10 +377,33 @@ level_panel = html.Div([
 
 # ── Bottom row: density matrix ────────────────────────────────────────────────
 density_panel = html.Div([
-    dcc.Graph(
-        id='plot-density',
-        style={'height': '35vh'},
-        config={'displayModeBar': False},
+    dcc.Tabs(
+        id='density-tabs',
+        value='amplitudes',
+        children=[
+            dcc.Tab(
+                label='Amplitudes',
+                value='amplitudes',
+                style=TAB_STYLE,
+                selected_style=TAB_SELECTED_STYLE,
+                children=[dcc.Graph(
+                    id='plot-amplitudes',
+                    style={'height': 'calc(35vh - 38px)'},
+                    config={'displayModeBar': False},
+                )],
+            ),
+            dcc.Tab(
+                label='Density Matrix',
+                value='density',
+                style=TAB_STYLE,
+                selected_style=TAB_SELECTED_STYLE,
+                children=[dcc.Graph(
+                    id='plot-density',
+                    style={'height': 'calc(35vh - 38px)'},
+                    config={'displayModeBar': False},
+                )],
+            ),
+        ],
     ),
 ], style={**STYLE_PANEL, 'width': '30%', 'boxSizing': 'border-box',
           'padding': '6px'})
@@ -420,7 +447,7 @@ app.layout = html.Div([
     html.Div([
         scene_panel,
         controls_panel,
-    ], style=STYLE_ROW),
+    ], style={**STYLE_ROW, 'flex': '1', 'minHeight': '0', 'marginBottom': '10px'}),
 
     # Row 2: level diagram + density matrix + tabbed plots
     html.Div([
@@ -454,12 +481,13 @@ app.layout = html.Div([
 # called by addEventListener on every slider/radio/checkbox change.
 
 @callback(
-    # ── Outputs: all 5 figures ────────────────────────────────────────────────
-    Output('plot-3d',      'figure'),
-    Output('plot-level',   'figure'),
-    Output('plot-density', 'figure'),
-    Output('plot-ellipse', 'figure'),
-    Output('plot-poincare','figure'),
+    # ── Outputs: all figures ──────────────────────────────────────────────────
+    Output('plot-3d',         'figure'),
+    Output('plot-level',      'figure'),
+    Output('plot-amplitudes', 'figure'),
+    Output('plot-density',    'figure'),
+    Output('plot-ellipse',    'figure'),
+    Output('plot-poincare',   'figure'),
     # ── Slider value displays (keep input boxes in sync with slider) ──────────
     Output('input-theta',   'value', allow_duplicate=True),
     Output('input-phi',     'value', allow_duplicate=True),
@@ -521,7 +549,8 @@ def update_all(
 
     # ── Build figures ─────────────────────────────────────────────────────────
     # JS conversion: each make_*_figure() call becomes its JS equivalent
-    fig_3d       = make_3d_figure(result)
+    fig_amplitudes = make_amplitudes_figure(result)
+    fig_3d         = make_3d_figure(result)
     camera = None
     if relayout_data and 'scene.camera' in relayout_data:
         camera = relayout_data['scene.camera']
@@ -547,7 +576,7 @@ def update_all(
         fig_poincare.update_layout(scene_camera=poincare_camera)
 
     return (
-        fig_3d, fig_level, fig_density, fig_ellipse, fig_poincare,
+        fig_3d, fig_level, fig_amplitudes, fig_density, fig_ellipse, fig_poincare,
         theta, phi, chi,
         theta_b, phi_b,
         alpha1, alpha2, alpha3,

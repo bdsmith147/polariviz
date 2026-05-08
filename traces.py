@@ -685,7 +685,7 @@ def make_density_figure(result, camera=None):
         plot_bgcolor=COLOR_BG,
         margin=dict(l=0, r=0, t=30, b=0),
         title=dict(
-            text='Density Matrix  (height=|ρ|, color=phase)',
+            text='Density Matrix',
             font=dict(color=COLOR_TEXT, size=13),
             x=0.5,
         ),
@@ -725,7 +725,76 @@ def make_density_figure(result, camera=None):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 6. make_ellipse_figure()
+# 6. make_amplitudes_figure()
+# ══════════════════════════════════════════════════════════════════════════════
+
+def make_amplitudes_figure(result):
+    """Display the complex spherical transition amplitudes [σ+, π, σ−] as a table.
+
+    Columns: component label | Re(ψ) | Im(ψ) | |ψ| | Phase (°)
+
+    Returns a go.Figure containing a single go.Table trace.
+    """
+    spherical = result['spherical']   # [[re,im], [re,im], [re,im]]
+
+    components = ['σ+', 'π', 'σ−']
+    component_colors = [COLOR_SIGMA_PLUS, COLOR_PI, COLOR_SIGMA_MINUS]
+
+    re_vals    = [f'{s[0]:+.4f}' for s in spherical]
+    im_vals    = [f'{s[1]:+.4f}' for s in spherical]
+    mag_vals   = [f'{math.sqrt(s[0]**2 + s[1]**2):.4f}' for s in spherical]
+    phase_vals = [f'{math.degrees(math.atan2(s[1], s[0])):.1f}°'
+                  for s in spherical]
+
+    n_rows = 3
+    cell_bg   = '#16213E'
+    header_bg = '#1E2A3E'
+
+    table = go.Table(
+        columnwidth=[60, 90, 90, 80, 80],
+        header=dict(
+            values=['<b>ψ</b>', '<b>Re</b>', '<b>Im</b>',
+                    '<b>|ψ|</b>', '<b>Phase</b>'],
+            fill_color=header_bg,
+            font=dict(color='#7EC8E3', size=12),
+            align='center',
+            height=30,
+            line_color='#2A2A4A',
+        ),
+        cells=dict(
+            values=[components, re_vals, im_vals, mag_vals, phase_vals],
+            fill_color=cell_bg,
+            font=dict(
+                color=[component_colors,
+                       [COLOR_TEXT] * n_rows,
+                       [COLOR_TEXT] * n_rows,
+                       [COLOR_TEXT] * n_rows,
+                       [COLOR_TEXT] * n_rows],
+                size=13,
+                family='monospace, Courier New, courier',
+            ),
+            align='center',
+            height=34,
+            line_color='#2A2A4A',
+        ),
+    )
+
+    layout = go.Layout(
+        paper_bgcolor=COLOR_PAPER,
+        plot_bgcolor=COLOR_BG,
+        margin=dict(l=8, r=8, t=30, b=8),
+        title=dict(
+            text='Transition Amplitudes  |ψ⟩',
+            font=dict(color=COLOR_TEXT, size=13),
+            x=0.5,
+        ),
+    )
+
+    return go.Figure(data=[table], layout=layout)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 8. make_ellipse_figure()
 # ══════════════════════════════════════════════════════════════════════════════
 
 def make_ellipse_figure(result):
@@ -862,7 +931,7 @@ def make_ellipse_figure(result):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 7. make_poincare_figure()
+# 9. make_poincare_figure()
 # ══════════════════════════════════════════════════════════════════════════════
 
 def make_poincare_figure(result):
