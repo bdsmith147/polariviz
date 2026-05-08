@@ -29,6 +29,7 @@ from traces import (
     make_level_figure,
     make_amplitudes_figure,
     make_density_figure,
+    make_stokes_figure,
     make_ellipse_figure,
     make_poincare_figure,
 )
@@ -436,6 +437,17 @@ tabbed_panel = html.Div([
                     config={'displayModeBar': False},
                 )],
             ),
+            dcc.Tab(
+                label='Stokes',
+                value='stokes',
+                style=TAB_STYLE,
+                selected_style=TAB_SELECTED_STYLE,
+                children=[dcc.Graph(
+                    id='plot-stokes',
+                    style={'height': '32vh'},
+                    config={'displayModeBar': False},
+                )],
+            ),
         ],
     ),
 ], style={**STYLE_PANEL, 'width': '38%', 'boxSizing': 'border-box',
@@ -488,6 +500,7 @@ app.layout = html.Div([
     Output('plot-density',    'figure'),
     Output('plot-ellipse',    'figure'),
     Output('plot-poincare',   'figure'),
+    Output('plot-stokes',     'figure'),
     # ── Slider value displays (keep input boxes in sync with slider) ──────────
     Output('input-theta',   'value', allow_duplicate=True),
     Output('input-phi',     'value', allow_duplicate=True),
@@ -550,6 +563,7 @@ def update_all(
     # ── Build figures ─────────────────────────────────────────────────────────
     # JS conversion: each make_*_figure() call becomes its JS equivalent
     fig_amplitudes = make_amplitudes_figure(result)
+    fig_stokes     = make_stokes_figure(result)
     fig_3d         = make_3d_figure(result)
     camera = None
     if relayout_data and 'scene.camera' in relayout_data:
@@ -576,7 +590,8 @@ def update_all(
         fig_poincare.update_layout(scene_camera=poincare_camera)
 
     return (
-        fig_3d, fig_level, fig_amplitudes, fig_density, fig_ellipse, fig_poincare,
+        fig_3d, fig_level, fig_amplitudes, fig_density,
+        fig_ellipse, fig_poincare, fig_stokes,
         theta, phi, chi,
         theta_b, phi_b,
         alpha1, alpha2, alpha3,

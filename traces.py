@@ -794,7 +794,85 @@ def make_amplitudes_figure(result):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 8. make_ellipse_figure()
+# 8. make_stokes_figure()
+# ══════════════════════════════════════════════════════════════════════════════
+
+def make_stokes_figure(result):
+    """Display the four Stokes parameters as a table.
+
+    Rows: S0, S1, S2, S3
+    Columns: parameter name | value | normalized (Sn/S0) | physical meaning
+
+    Returns a go.Figure containing a single go.Table trace.
+    """
+    stokes = result['stokes']
+    S0 = stokes['S0']
+    S1 = stokes['S1']
+    S2 = stokes['S2']
+    S3 = stokes['S3']
+    norm = S0 if S0 > 1e-12 else 1.0
+
+    n_rows = 4
+
+    params     = ['S0', 'S1', 'S2', 'S3']
+    values     = [f'{S0:+.4f}', f'{S1:+.4f}', f'{S2:+.4f}', f'{S3:+.4f}']
+    normalized = [f'{S0/norm:+.4f}', f'{S1/norm:+.4f}',
+                  f'{S2/norm:+.4f}', f'{S3/norm:+.4f}']
+    meanings   = ['Total intensity',
+                  'Linear H / V',
+                  'Linear +45 / -45',
+                  'Circular RHC / LHC']
+
+    # Color each row's label: S3 gets the circular color, others use default text
+    label_colors  = [COLOR_TEXT, COLOR_TEXT, COLOR_TEXT, COLOR_SIGMA_MINUS]
+    value_colors  = [COLOR_TEXT] * n_rows
+    norm_colors   = [COLOR_TEXT] * n_rows
+    mean_colors   = [COLOR_TEXT] * n_rows
+
+    header_bg = '#1E2A3E'
+    cell_bg   = '#16213E'
+
+    table = go.Table(
+        columnwidth=[50, 90, 90, 160],
+        header=dict(
+            values=['<b>Param</b>', '<b>Value</b>',
+                    '<b>Value / S0</b>', '<b>Meaning</b>'],
+            fill_color=header_bg,
+            font=dict(color='#7EC8E3', size=12),
+            align='center',
+            height=30,
+            line_color='#2A2A4A',
+        ),
+        cells=dict(
+            values=[params, values, normalized, meanings],
+            fill_color=cell_bg,
+            font=dict(
+                color=[label_colors, value_colors, norm_colors, mean_colors],
+                size=13,
+                family='monospace, Courier New, courier',
+            ),
+            align=['center', 'center', 'center', 'left'],
+            height=34,
+            line_color='#2A2A4A',
+        ),
+    )
+
+    layout = go.Layout(
+        paper_bgcolor=COLOR_PAPER,
+        plot_bgcolor=COLOR_BG,
+        margin=dict(l=8, r=8, t=30, b=8),
+        title=dict(
+            text='Stokes Parameters',
+            font=dict(color=COLOR_TEXT, size=13),
+            x=0.5,
+        ),
+    )
+
+    return go.Figure(data=[table], layout=layout)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# 10. make_ellipse_figure()
 # ══════════════════════════════════════════════════════════════════════════════
 
 def make_ellipse_figure(result):
@@ -931,7 +1009,7 @@ def make_ellipse_figure(result):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# 9. make_poincare_figure()
+# 11. make_poincare_figure()
 # ══════════════════════════════════════════════════════════════════════════════
 
 def make_poincare_figure(result):
