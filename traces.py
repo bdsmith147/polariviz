@@ -20,6 +20,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 
 import math
+import base64
 import plotly.graph_objects as go
 from math_helpers import scale, add, subtract, normalize, norm, cross, linspace
 
@@ -611,6 +612,106 @@ def _phase_to_color(phase_rad):
     return f'#{ri:02x}{gi:02x}{bi:02x}'
 
 
+def _make_phase_wheel_svg():
+    """Build an SVG color-wheel legend for the phase encoding used in the
+    density matrix figure.
+
+    Layout (all in a 160×160 viewBox):
+      - 72 annular segments (5° each), each colored by _phase_to_color
+      - Phase increases counter-clockwise; phase=0 at 3 o'clock (right)
+      - Black stroke on inner and outer border circles
+      - Inward tick marks at 0°, 90°, 180°, 270°
+      - Degree labels outside the ring at each tick
+
+    Returns an SVG string.
+    """
+    N        = 72      # segments — 360/72 = 5° per segment
+    CX       = 80.0   # centre x  (viewBox 160×160)
+    CY       = 80.0   # centre y
+    R_OUT    = 52.0   # outer radius
+    R_IN     = 32.0   # inner radius  (ring width = 20 — moderate)
+    TICK_LEN = 7.0    # tick protrudes inward from outer edge
+    R_LABEL  = 65.0   # label distance from centre
+    FONT_SZ  = 14
+    BDR      = 1.5    # border / tick stroke-width
+
+    dtheta = 2.0 * math.pi / N
+    parts = [
+        '<svg xmlns="http://www.w3.org/2000/svg"'
+        ' width="160" height="160" viewBox="0 0 160 160">',
+    ]
+
+    # ── Colored annular segments ──────────────────────────────────────────────
+    # Phase = 0 at 3-o'clock; increases counter-clockwise (standard math).
+    # SVG y-axis points down, so: x = cx + r*cos(θ),  y = cy − r*sin(θ).
+    # CCW in math → CCW on screen → outer arc sweep-flag = 0.
+    # Inner return arc goes CW → sweep-flag = 1.
+    for i in range(N):
+        t1 = i * dtheta
+        t2 = t1 + dtheta
+        ox1 = CX + R_OUT * math.cos(t1);  oy1 = CY - R_OUT * math.sin(t1)
+        ox2 = CX + R_OUT * math.cos(t2);  oy2 = CY - R_OUT * math.sin(t2)
+        ix1 = CX + R_IN  * math.cos(t1);  iy1 = CY - R_IN  * math.sin(t1)
+        ix2 = CX + R_IN  * math.cos(t2);  iy2 = CY - R_IN  * math.sin(t2)
+        col = _phase_to_color(t1)
+        parts.append(
+            f'<path d="'
+            f'M {ox1:.3f},{oy1:.3f} '
+            f'A {R_OUT:.1f},{R_OUT:.1f} 0 0,0 {ox2:.3f},{oy2:.3f} '
+            f'L {ix2:.3f},{iy2:.3f} '
+            f'A {R_IN:.1f},{R_IN:.1f} 0 0,1 {ix1:.3f},{iy1:.3f} Z" '
+            f'fill="{col}" stroke="{col}" stroke-width="0.8"/>'
+        )
+
+    # ── Black border circles ──────────────────────────────────────────────────
+    for r in (R_OUT, R_IN):
+        parts.append(
+            f'<circle cx="{CX:.0f}" cy="{CY:.0f}" r="{r:.1f}"'
+            f' fill="none" stroke="black" stroke-width="{BDR}"/>'
+        )
+
+    # ── Inward tick marks and labels at cardinal phase angles ─────────────────
+    tick_specs = [
+        (  0, '0°'),
+        ( 90, '90°'),
+        (180, '180°'),
+        (270, '270°'),
+    ]
+    for deg, label in tick_specs:
+        rad   = math.radians(deg)
+        cos_t = math.cos(rad)
+        sin_t = math.sin(rad)
+
+        # Tick line from outer edge inward
+        tx1 = CX + R_OUT * cos_t;            ty1 = CY - R_OUT * sin_t
+        tx2 = CX + (R_OUT - TICK_LEN) * cos_t; ty2 = CY - (R_OUT - TICK_LEN) * sin_t
+        parts.append(
+            f'<line x1="{tx1:.2f}" y1="{ty1:.2f}"'
+            f' x2="{tx2:.2f}" y2="{ty2:.2f}"'
+            f' stroke="black" stroke-width="{BDR}"/>'
+        )
+
+        # Label centred on the radial direction, just outside the ring
+        lx = CX + R_LABEL * cos_t
+        ly = CY - R_LABEL * sin_t
+        parts.append(
+            f'<text x="{lx:.2f}" y="{ly:.2f}"'
+            f' font-size="{FONT_SZ}" font-family="Arial,sans-serif"'
+            f' fill="#D3D3D3" text-anchor="middle" dominant-baseline="middle">'
+            f'{label}</text>'
+        )
+
+    parts.append('</svg>')
+    return '\n'.join(parts)
+
+
+# Precompute once at module load — the wheel is data-independent
+_PHASE_WHEEL_DATA_URI = (
+    'data:image/svg+xml;base64,'
+    + base64.b64encode(_make_phase_wheel_svg().encode('utf-8')).decode('ascii')
+)
+
+
 def make_density_figure(result, camera=None):
     """Build the 3×3 density matrix visualization.
 
@@ -719,6 +820,14 @@ def make_density_figure(result, camera=None):
                 up=dict(x=0, y=0, z=1),
             ),
         ),
+        images=[dict(
+            source=_PHASE_WHEEL_DATA_URI,
+            xref='paper', yref='paper',
+            x=0.99, y=0.99,
+            sizex=0.30, sizey=0.44,
+            xanchor='right', yanchor='top',
+            layer='above',
+        )],
     )
 
     return go.Figure(data=traces, layout=layout)
