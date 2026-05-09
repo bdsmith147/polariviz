@@ -291,7 +291,7 @@ def make_3d_figure(result, show_ellipse=True, show_eaxes=True):
     # 4. k̂ vector (most prominent arrow)
     traces += _arrow_traces(
         k_tail, k_tip,
-        color=COLOR_K_ARROW, name='k̂ (beam)',
+        color=COLOR_K_ARROW, name='k (beam)',
         line_width=20, cone_size=0.30)
 
     # 5. ê₁, ê₂ axes (subtle, checkbox-gated)
@@ -322,8 +322,10 @@ def make_3d_figure(result, show_ellipse=True, show_eaxes=True):
             x=0.5,
         ),
         legend=dict(
-            font=dict(color=COLOR_LAB_AXES_TEXT, size=11),
-            bgcolor='rgba(0,0,0,0)',
+            font=dict(color='#D0D0D0', size=11),
+            bgcolor='rgba(16, 20, 40, 0.80)',
+            bordercolor='#2A2A4A',
+            borderwidth=1,
             x=0.01, y=0.99,
         ),
         scene=dict(
