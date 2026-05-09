@@ -354,7 +354,7 @@ controls_panel = html.Div([
         style={'marginBottom': '0px'},
     ),
 
-], style={**STYLE_PANEL, 'width': '38%', 'boxSizing': 'border-box'})
+], style={**STYLE_PANEL, 'flex': '1', 'minWidth': '0', 'boxSizing': 'border-box'})
 
 # ── 3D scene ──────────────────────────────────────────────────────────────────
 scene_panel = html.Div([
@@ -373,7 +373,7 @@ level_panel = html.Div([
         style={'height': '35vh'},
         config={'displayModeBar': False},
     ),
-], style={**STYLE_PANEL, 'width': '30%', 'boxSizing': 'border-box',
+], style={**STYLE_PANEL, 'flex': '1', 'minWidth': '0', 'boxSizing': 'border-box',
           'padding': '6px'})
 
 # ── Bottom row: density matrix ────────────────────────────────────────────────
@@ -406,7 +406,7 @@ density_panel = html.Div([
             ),
         ],
     ),
-], style={**STYLE_PANEL, 'width': '30%', 'boxSizing': 'border-box',
+], style={**STYLE_PANEL, 'flex': '1', 'minWidth': '0', 'boxSizing': 'border-box',
           'padding': '6px'})
 
 # ── Bottom row: tabbed panel (ellipse / Poincaré) ─────────────────────────────
@@ -450,7 +450,7 @@ tabbed_panel = html.Div([
             ),
         ],
     ),
-], style={**STYLE_PANEL, 'width': '38%', 'boxSizing': 'border-box',
+], style={**STYLE_PANEL, 'flex': '1', 'minWidth': '0', 'boxSizing': 'border-box',
           'padding': '6px'})
 
 # ── Full layout ───────────────────────────────────────────────────────────────
@@ -462,9 +462,20 @@ app.layout = html.Div([
     ], style={**STYLE_ROW, 'flex': '1', 'minHeight': '0', 'marginBottom': '10px'}),
 
     # Row 2: level diagram + density matrix + tabbed plots
+    # level+density are wrapped in a 60%-wide group so the tabbed panel's
+    # left/right edges align with the controls panel above it.
     html.Div([
-        level_panel,
-        density_panel,
+        html.Div([
+            level_panel,
+            density_panel,
+        ], style={
+            'display': 'flex',
+            'flexDirection': 'row',
+            'gap': '10px',
+            'flex': '0 0 60%',
+            'minWidth': '0',
+            'boxSizing': 'border-box',
+        }),
         tabbed_panel,
     ], style=STYLE_ROW),
 
