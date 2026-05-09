@@ -139,10 +139,12 @@ def _slider_block(slider_id, spec, margin_bottom='12px'):
     ], style={'marginBottom': margin_bottom})
 
 
-def _vertical_slider_block(slider_id, spec, height=160):
+def _vertical_slider_block(slider_id, spec, height=160, display_label=None):
     """Return a labelled vertical slider as a Div — label + number input above,
     vertical dcc.Slider below.
 
+    display_label: optional Dash component or string to override spec['label']
+                   for the visible header (allows rich HTML like html.Sub).
     JS conversion: rotate a horizontal <input type="range"> 90° with CSS.
     """
     _input_style = {
@@ -156,8 +158,9 @@ def _vertical_slider_block(slider_id, spec, height=160):
         'textAlign': 'center',
         'padding': '1px 4px',
     }
+    label_content = display_label if display_label is not None else spec['label']
     return html.Div([
-        html.Div(spec['label'],
+        html.Div(label_content,
                  style={'color': '#B0B0C0', 'fontSize': '11px',
                         'textAlign': 'center', 'marginBottom': '4px'}),
         html.Div([
@@ -175,17 +178,20 @@ def _vertical_slider_block(slider_id, spec, height=160):
                                   'marginLeft': '2px'}),
         ], style={'display': 'flex', 'alignItems': 'center',
                   'justifyContent': 'center', 'marginBottom': '6px'}),
-        dcc.Slider(
-            id=f'slider-{slider_id}',
-            min=spec['min'],
-            max=spec['max'],
-            step=spec['step'],
-            value=spec['value'],
-            marks=None,
-            vertical=True,
-            verticalHeight=height,
-            tooltip={'placement': 'right', 'always_visible': False},
-            updatemode='drag',
+        html.Div(
+            dcc.Slider(
+                id=f'slider-{slider_id}',
+                min=spec['min'],
+                max=spec['max'],
+                step=spec['step'],
+                value=spec['value'],
+                marks=None,
+                vertical=True,
+                verticalHeight=height,
+                tooltip={'placement': 'right', 'always_visible': False},
+                updatemode='drag',
+            ),
+            style={'display': 'flex', 'justifyContent': 'center'},
         ),
     ], style={
         'display': 'flex',
@@ -319,8 +325,16 @@ controls_panel = html.Div([
                         html.Div([
                             html.Div('Quantization Axis', style=STYLE_SECTION_LABEL),
                             html.Div([
-                                _vertical_slider_block('theta_b', SLIDERS['theta_b']),
-                                _vertical_slider_block('phi_b',   SLIDERS['phi_b']),
+                                _vertical_slider_block('theta_b', SLIDERS['theta_b'],
+                                    display_label=html.Div([
+                                        html.Span(['θ', html.Sub('B')]),
+                                        html.Div('(polar)', style={'fontSize': '10px', 'marginTop': '1px'}),
+                                    ], style={'textAlign': 'center'})),
+                                _vertical_slider_block('phi_b', SLIDERS['phi_b'],
+                                    display_label=html.Div([
+                                        html.Span(['φ', html.Sub('B')]),
+                                        html.Div('(azimuthal)', style={'fontSize': '10px', 'marginTop': '1px'}),
+                                    ], style={'textAlign': 'center'})),
                             ], style={
                                 'display': 'flex',
                                 'flexDirection': 'row',
