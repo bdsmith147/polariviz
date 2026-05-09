@@ -20,6 +20,7 @@
 #   5. Run
 # ─────────────────────────────────────────────────────────────────────────────
 
+import base64
 from dash import Dash, dcc, html, Input, Output, State, callback, no_update
 import plotly.graph_objects as go
 from math_helpers import degrees_to_radians
@@ -40,6 +41,31 @@ from traces import (
 # ══════════════════════════════════════════════════════════════════════════════
 
 app = Dash(__name__, title='PolariViz')
+
+# GitHub mark-github-24 icon (Primer Octicons) — precomputed data URI so the
+# icon renders reliably without any external network request.
+_GITHUB_ICON_SVG = (
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"'
+    ' width="18" height="18" fill="#B0B0C0">'
+    '<path d="M12 1C5.923 1 1 5.923 1 12c0 4.863 3.163 8.979 7.535 10.426'
+    '.55.098.748-.237.748-.526 0-.26-.009-.949-.014-1.863'
+    '-3.06.664-3.705-1.475-3.705-1.475-.5-1.27-1.22-1.607'
+    '-1.22-1.607-.998-.682.076-.668.076-.668 1.103.077 1.683'
+    ' 1.133 1.683 1.133.981 1.68 2.574 1.195 3.2.913.1-.71'
+    '.384-1.195.698-1.47-2.442-.278-5.012-1.221-5.012-5.437'
+    ' 0-1.201.429-2.183 1.132-2.952-.114-.278-.49-1.397.108'
+    '-2.91 0 0 .923-.295 3.023 1.128A10.574 10.574 0 0 1 12'
+    ' 6.577c.935.004 1.876.126 2.754.37 2.099-1.424 3.02-1.128'
+    ' 3.02-1.128.6 1.513.223 2.632.11 2.91.706.769 1.131 1.751'
+    ' 1.131 2.952 0 4.226-2.574 5.156-5.022 5.428.394.34.745'
+    ' 1.01.745 2.036 0 1.47-.013 2.655-.013 3.017 0 .291.197'
+    '.629.752.522C19.841 20.975 23 16.862 23 12c0-6.077-4.923'
+    '-11-11-11Z"/></svg>'
+)
+_GITHUB_ICON_URI = (
+    'data:image/svg+xml;base64,'
+    + base64.b64encode(_GITHUB_ICON_SVG.encode('utf-8')).decode('ascii')
+)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -230,9 +256,39 @@ TAB_SELECTED_STYLE = {
 # ── Controls panel ────────────────────────────────────────────────────────────
 controls_panel = html.Div([
 
-    html.H3('PolariViz', style={
-        'color': '#7EC8E3', 'fontSize': '16px',
-        'margin': '0 0 8px 0', 'letterSpacing': '0.1em',
+    html.Div([
+        html.H3('PolariViz', style={
+            'color': '#7EC8E3', 'fontSize': '16px',
+            'margin': '0', 'letterSpacing': '0.1em',
+        }),
+        html.A([
+            html.Img(
+                src=_GITHUB_ICON_URI,
+                style={'width': '18px', 'height': '18px', 'display': 'block'},
+            ),
+            html.Span('Help', style={'fontSize': '13px'}),
+        ],
+        href='https://github.com/bdsmith147/polarization-rotation-visualizer-dash#readme',
+        target='_blank',
+        style={
+            'display': 'inline-flex',
+            'alignItems': 'center',
+            'gap': '4px',
+            'color': '#B0B0C0',
+            'backgroundColor': '#0D1B2A',
+            'border': '1px solid #2A2A4A',
+            'borderRadius': '4px',
+            'padding': '3px 8px',
+            'textDecoration': 'none',
+            'cursor': 'pointer',
+            'flexShrink': '0',
+        }),
+    ], style={
+        'display': 'flex',
+        'flexDirection': 'row',
+        'alignItems': 'center',
+        'justifyContent': 'space-between',
+        'marginBottom': '8px',
     }),
 
     dcc.Tabs(
