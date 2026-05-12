@@ -570,7 +570,7 @@ app.layout = html.Div([
 
     # Footer
     html.Div(
-        '© 2026 Benjamin Smith — License GPLv3+',
+        '© 2026 Benjamin Smith — License GPLv3+  ·  Co-Authored-By: Claude Sonnet 4.6',
         style={
             'textAlign': 'center',
             'color': '#555570',

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PolariViz</title>
+  <style>
+    /* ── Reset & base ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #1A1A2E;
+      color: #E0E0E0;
+      font-family: Inter, 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 12px;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    /* ── Layout rows ──────────────────────────────────────────────────────── */
+    .row {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+    }
+
+    /* ── Panel ────────────────────────────────────────────────────────────── */
+    .panel {
+      background: #16213E;
+      border-radius: 8px;
+      border: 1px solid #2A2A4A;
+      padding: 12px;
+    }
+
+    /* ── Section labels ───────────────────────────────────────────────────── */
+    .section-label {
+      color: #7EC8E3;
+      font-size: 11px;
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      margin-top: 10px;
+    }
+
+    /* ── Tab system ───────────────────────────────────────────────────────── */
+    .tabs-bar {
+      display: flex;
+      gap: 2px;
+    }
+    .tab-btn {
+      background: #1A1A2E;
+      color: #B0B0C0;
+      border: 1px solid #2A2A4A;
+      border-radius: 4px 4px 0 0;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-family: inherit;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+    .tab-btn.active {
+      background: #16213E;
+      color: #E0E0E0;
+      border-color: #457B9D;
+      border-bottom-color: #16213E;
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* ── Horizontal sliders ───────────────────────────────────────────────── */
+    .slider-block { }
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 2px;
+    }
+    .slider-label { color: #B0B0C0; font-size: 12px; white-space: nowrap; }
+
+    input[type="number"] {
+      width: 52px;
+      background: #0D1B2A;
+      color: #E0E0E0;
+      border: 1px solid #2A2A4A;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      font-family: inherit;
+      text-align: center;
+      padding: 1px 4px;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: #457B9D;
+      display: block;
+    }
+
+    /* ── Vertical sliders ─────────────────────────────────────────────────── */
+    .vslider-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .vslider-label {
+      color: #B0B0C0;
+      font-size: 11px;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+    .vslider-label sub { font-size: 9px; }
+    .vslider-label .sub-note {
+      display: block;
+      font-size: 10px;
+      margin-top: 1px;
+    }
+    .vslider-num-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      margin-bottom: 6px;
+    }
+    .vslider-num-row input[type="number"] { width: 48px; }
+    /* Rotate a horizontal range into a vertical one.
+       The container gives the "true" width (= slider height) a fixed size,
+       and the range element is sized to that width then rotated -90°. */
+    .vslider-track {
+      width: 30px;       /* track width after rotation becomes height on screen */
+      height: 160px;     /* slot height = slider length */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+    .vslider-track input[type="range"] {
+      width: 160px;
+      transform: rotate(-90deg);
+      transform-origin: center center;
+      margin: 0;
+    }
+
+    /* ── Link / button ────────────────────────────────────────────────────── */
+    .btn-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #B0B0C0;
+      background: #0D1B2A;
+      border: 1px solid #2A2A4A;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: 13px;
+      font-family: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    /* ── Radio group ──────────────────────────────────────────────────────── */
+    .radio-group {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+    }
+    .radio-group label {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      color: #E0E0E0;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    /* ── Footer ───────────────────────────────────────────────────────────── */
+    .footer {
+      text-align: center;
+      color: #555570;
+      font-size: 11px;
+      padding-top: 6px;
+      border-top: 1px solid #2A2A4A;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ROW 1 : 3D scene (60%) + controls panel (40%)
+     ══════════════════════════════════════════════════════════════════════════ -->
+<div class="row" style="flex:1; min-height:0;">
+
+  <!-- 3D scene panel -->
+  <div class="panel" style="width:60%; padding:6px; display:flex; flex-direction:column;">
+    <div id="plot-3d" style="flex:1; min-height:0;"></div>
+  </div>
+
+  <!-- Controls panel -->
+  <div class="panel" style="flex:1; min-width:0; overflow-y:auto; display:flex; flex-direction:column;">
+
+    <!-- Header: title + Help / Feedback buttons -->
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; flex-shrink:0;">
+      <h3 style="color:#7EC8E3; font-size:16px; letter-spacing:0.1em;">PolariViz</h3>
+      <div style="display:flex; gap:6px;">
+        <a href="https://github.com/bdsmith147/polariviz#readme"
+           target="_blank" class="btn-link">
+          <!-- GitHub Octicon mark-github-24 -->
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               width="18" height="18" fill="#B0B0C0" style="display:block;">
+            <path d="M12 1C5.923 1 1 5.923 1 12c0 4.863 3.163 8.979 7.535 10.426.55.098.748-.237.748-.526 0-.26-.009-.949-.014-1.863-3.06.664-3.705-1.475-3.705-1.475-.5-1.27-1.22-1.607-1.22-1.607-.998-.682.076-.668.076-.668 1.103.077 1.683 1.133 1.683 1.133.981 1.68 2.574 1.195 3.2.913.1-.71.384-1.195.698-1.47-2.442-.278-5.012-1.221-5.012-5.437 0-1.201.429-2.183 1.132-2.952-.114-.278-.49-1.397.108-2.91 0 0 .923-.295 3.023 1.128A10.574 10.574 0 0 1 12 6.577c.935.004 1.876.126 2.754.37 2.099-1.424 3.02-1.128 3.02-1.128.6 1.513.223 2.632.11 2.91.706.769 1.131 1.751 1.131 2.952 0 4.226-2.574 5.156-5.022 5.428.394.34.745 1.01.745 2.036 0 1.47-.013 2.655-.013 3.017 0 .291.197.629.752.522C19.841 20.975 23 16.862 23 12c0-6.077-4.923-11-11-11Z"/>
+          </svg>
+          <span>Help</span>
+        </a>
+        <a href="https://github.com/bdsmith147/polariviz/issues"
+           target="_blank" class="btn-link">
+          <span>Feedback</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Outer control tabs: Geometry | Polarization Input -->
+    <div style="flex:1; display:flex; flex-direction:column; min-height:0;">
+      <div class="tabs-bar">
+        <button class="tab-btn active"
+                onclick="activateTab('ctrl', 'geometry', this)">Geometry</button>
+        <button class="tab-btn"
+                onclick="activateTab('ctrl', 'polarization', this)">Polarization Input</button>
+      </div>
+
+      <!-- ── Tab: Geometry ─────────────────────────────────────────────── -->
+      <div class="tab-pane active" id="ctrl-geometry"
+           style="padding-top:8px; flex:1; overflow-y:auto;">
+        <div style="display:flex; flex-direction:row;">
+
+          <!-- Beam direction: horizontal sliders -->
+          <div style="width:60%; padding-right:10px;">
+            <div class="section-label">Beam Direction</div>
+
+            <!-- θ -->
+            <div class="slider-block" style="margin-bottom:20px;">
+              <div class="slider-row">
+                <span class="slider-label">θ (polar):</span>
+                <input type="number" id="input-theta" value="0" min="0" max="180" step="1">
+                <span class="slider-label">°</span>
+              </div>
+              <input type="range" id="slider-theta" min="0" max="180" step="1" value="0">
+            </div>
+
+            <!-- φ -->
+            <div class="slider-block" style="margin-bottom:20px;">
+              <div class="slider-row">
+                <span class="slider-label">φ (azimuthal):</span>
+                <input type="number" id="input-phi" value="0" min="0" max="360" step="1">
+                <span class="slider-label">°</span>
+              </div>
+              <input type="range" id="slider-phi" min="0" max="360" step="1" value="0">
+            </div>
+
+            <!-- χ -->
+            <div class="slider-block" style="margin-bottom:4px;">
+              <div class="slider-row">
+                <span class="slider-label">χ (roll):</span>
+                <input type="number" id="input-chi" value="0" min="0" max="360" step="1">
+                <span class="slider-label">°</span>
+              </div>
+              <input type="range" id="slider-chi" min="0" max="360" step="1" value="0">
+            </div>
+          </div>
+
+          <!-- Quantization axis: vertical sliders -->
+          <div style="width:40%;">
+            <div class="section-label">Quantization Axis</div>
+            <div style="display:flex; flex-direction:row; justify-content:space-around; padding-top:4px;">
+
+              <!-- θ_B -->
+              <div class="vslider-wrap">
+                <div class="vslider-label">
+                  θ<sub>B</sub>
+                  <span class="sub-note">(polar)</span>
+                </div>
+                <div class="vslider-num-row">
+                  <input type="number" id="input-theta_b" value="0" min="0" max="180" step="1">
+                  <span class="slider-label">°</span>
+                </div>
+                <div class="vslider-track">
+                  <input type="range" id="slider-theta_b" min="0" max="180" step="1" value="0">
+                </div>
+              </div>
+
+              <!-- φ_B -->
+              <div class="vslider-wrap">
+                <div class="vslider-label">
+                  φ<sub>B</sub>
+                  <span class="sub-note">(azimuthal)</span>
+                </div>
+                <div class="vslider-num-row">
+                  <input type="number" id="input-phi_b" value="0" min="0" max="360" step="1">
+                  <span class="slider-label">°</span>
+                </div>
+                <div class="vslider-track">
+                  <input type="range" id="slider-phi_b" min="0" max="360" step="1" value="0">
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div><!-- /ctrl-geometry -->
+
+      <!-- ── Tab: Polarization Input ──────────────────────────────────── -->
+      <div class="tab-pane" id="ctrl-polarization"
+           style="padding-top:8px; flex:1; overflow-y:auto;">
+
+        <!-- Inner tabs: Basic | Waveplate Chain -->
+        <div class="tabs-bar">
+          <button class="tab-btn active"
+                  onclick="activateTab('pol', 'basis', this)">Basic</button>
+          <button class="tab-btn"
+                  onclick="activateTab('pol', 'waveplate', this)">Waveplate Chain</button>
+        </div>
+
+        <!-- Basic: radio buttons -->
+        <div class="tab-pane active" id="pol-basis">
+          <div class="radio-group">
+            <label>
+              <input type="radio" name="basis-radio" value="sigma_plus" checked> RHC
+            </label>
+            <label>
+              <input type="radio" name="basis-radio" value="pi"> V
+            </label>
+            <label>
+              <input type="radio" name="basis-radio" value="sigma_minus"> LHC
+            </label>
+          </div>
+        </div>
+
+        <!-- Waveplate Chain -->
+        <div class="tab-pane" id="pol-waveplate">
+          <div style="color:#7EC8E3; font-size:11px; margin-top:8px; margin-bottom:4px;">
+            ↓ vertical &nbsp;→&nbsp; QWP₁ &nbsp;→&nbsp; HWP &nbsp;→&nbsp; QWP₂
+          </div>
+
+          <!-- α₁ -->
+          <div class="slider-block" style="margin-bottom:12px;">
+            <div class="slider-row">
+              <span class="slider-label">α₁ &nbsp;QWP₁ fast axis:</span>
+              <input type="number" id="input-alpha1" value="0" min="0" max="180" step="1">
+              <span class="slider-label">°</span>
+            </div>
+            <input type="range" id="slider-alpha1" min="0" max="180" step="1" value="0">
+          </div>
+
+          <!-- α₂ -->
+          <div class="slider-block" style="margin-bottom:12px;">
+            <div class="slider-row">
+              <span class="slider-label">α₂ &nbsp;HWP fast axis:</span>
+              <input type="number" id="input-alpha2" value="0" min="0" max="180" step="1">
+              <span class="slider-label">°</span>
+            </div>
+            <input type="range" id="slider-alpha2" min="0" max="180" step="1" value="0">
+          </div>
+
+          <!-- α₃ -->
+          <div class="slider-block">
+            <div class="slider-row">
+              <span class="slider-label">α₃ &nbsp;QWP₂ fast axis:</span>
+              <input type="number" id="input-alpha3" value="0" min="0" max="180" step="1">
+              <span class="slider-label">°</span>
+            </div>
+            <input type="range" id="slider-alpha3" min="0" max="180" step="1" value="0">
+          </div>
+        </div><!-- /pol-waveplate -->
+
+      </div><!-- /ctrl-polarization -->
+    </div><!-- /outer tab container -->
+
+  </div><!-- /controls panel -->
+</div><!-- /row 1 -->
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     ROW 2 : level diagram + density/amplitudes + ellipse/Poincaré/Stokes
+     ══════════════════════════════════════════════════════════════════════════ -->
+<div class="row" style="flex-shrink:0;">
+
+  <!-- Left 60%: level panel + density/amplitudes panel side by side -->
+  <div style="flex:0 0 60%; display:flex; flex-direction:row; gap:10px; min-width:0;">
+
+    <!-- Level diagram -->
+    <div class="panel" style="flex:1; min-width:0; padding:6px;">
+      <div id="plot-level" style="height:35vh;"></div>
+    </div>
+
+    <!-- Density / Amplitudes tabs -->
+    <div class="panel" style="flex:1; min-width:0; padding:6px;">
+      <div class="tabs-bar">
+        <button class="tab-btn active"
+                onclick="activateTab('dm', 'amplitudes', this)">Amplitudes</button>
+        <button class="tab-btn"
+                onclick="activateTab('dm', 'density', this)">Density Matrix</button>
+      </div>
+      <div class="tab-pane active" id="dm-amplitudes">
+        <div id="plot-amplitudes" style="height:calc(35vh - 38px);"></div>
+      </div>
+      <div class="tab-pane" id="dm-density">
+        <div id="plot-density" style="height:calc(35vh - 38px);"></div>
+      </div>
+    </div>
+
+  </div><!-- /left 60% -->
+
+  <!-- Right 40%: Ellipse / Poincaré / Stokes tabs -->
+  <div class="panel" style="flex:1; min-width:0; padding:6px;">
+    <div class="tabs-bar">
+      <button class="tab-btn active"
+              onclick="activateTab('rp', 'ellipse', this)">Polarization Ellipse</button>
+      <button class="tab-btn"
+              onclick="activateTab('rp', 'poincare', this)">Poincaré Sphere</button>
+      <button class="tab-btn"
+              onclick="activateTab('rp', 'stokes', this)">Stokes</button>
+    </div>
+    <div class="tab-pane active" id="rp-ellipse">
+      <div id="plot-ellipse" style="height:calc(35vh - 38px);"></div>
+    </div>
+    <div class="tab-pane" id="rp-poincare">
+      <div id="plot-poincare" style="height:calc(35vh - 38px);"></div>
+    </div>
+    <div class="tab-pane" id="rp-stokes">
+      <div id="plot-stokes" style="height:calc(35vh - 38px);"></div>
+    </div>
+  </div>
+
+</div><!-- /row 2 -->
+
+
+<!-- Footer -->
+<div class="footer">© 2026 Benjamin Smith — License GPLv3+&emsp;&emsp;·&emsp;&emsp;Co-Authored-By: Claude Sonnet 4.6</div>
+
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     SCRIPTS — load order matters: Plotly first, then our libs, then app.js
+     ══════════════════════════════════════════════════════════════════════════ -->
+<script src="https://cdn.plot.ly/plotly-2.35.0.min.js"></script>
+<script src="math_helpers.js"></script>
+<script src="physics.js"></script>
+<script src="traces.js"></script>
+<script src="app.js"></script>
+
+</body>
+</html>
