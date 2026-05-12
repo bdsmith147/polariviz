@@ -70,12 +70,77 @@ DM_BAR_GAP    = 1.0    # cell size (bars are spaced 1.0 apart)
 # 2. 3D SCENE HELPERS
 # ══════════════════════════════════════════════════════════════════════════════
 
-def _arrow_traces(tail, tip, color, name, line_width=5, cone_size=0.07):
-    """Build a 3D arrow as a Scatter3d line (shaft) + Cone (head).
+def _cone_mesh(tip_pos, direction, base_radius, height, color, name, n_sides=24):
+    """Build a cone as a Mesh3d trace with independent base_radius and height.
 
-    Returns a list of two traces: [shaft, head].
-    The cone is placed at the tip pointing in the direction tail→tip.
+    tip_pos    : [x, y, z] world position of the sharp tip
+    direction  : [u, v, w] vector pointing FROM base TOWARD tip (need not be unit)
+    base_radius: radius of the circular base
+    height     : distance from base centre to tip
+    n_sides    : polygon approximation (24 looks smooth at typical zoom)
+    """
+    mag = norm(direction)
+    if mag < 1e-10:
+        return None
+    d = normalize(direction)
 
+    # Base centre: step back from tip along arrow direction
+    base_center = subtract(tip_pos, scale(d, height))
+
+    # Two orthonormal vectors spanning the plane perpendicular to d
+    arb = [1.0, 0.0, 0.0] if abs(d[0]) < 0.9 else [0.0, 1.0, 0.0]
+    u_vec = normalize(cross(d, arb))
+    v_vec = cross(d, u_vec)          # already unit since d ⊥ u_vec, both unit
+
+    # Base circle vertices
+    base_verts = []
+    for s in range(n_sides):
+        a  = 2.0 * math.pi * s / n_sides
+        ca, sa = math.cos(a), math.sin(a)
+        p = add(base_center,
+                add(scale(u_vec, base_radius * ca),
+                    scale(v_vec, base_radius * sa)))
+        base_verts.append(p)
+
+    # Vertex list: base ring (0..n_sides-1), tip (n_sides), base centre (n_sides+1)
+    tip_idx    = n_sides
+    center_idx = n_sides + 1
+    all_verts  = base_verts + [list(tip_pos), list(base_center)]
+
+    xs = [vv[0] for vv in all_verts]
+    ys = [vv[1] for vv in all_verts]
+    zs = [vv[2] for vv in all_verts]
+
+    ii, jj, kk = [], [], []
+    for s in range(n_sides):
+        ns = (s + 1) % n_sides
+        # Side triangle: tip → base[s] → base[s+1]
+        ii.append(tip_idx);    jj.append(s);   kk.append(ns)
+        # Base triangle:  centre → base[s+1] → base[s]
+        ii.append(center_idx); jj.append(ns);  kk.append(s)
+
+    return go.Mesh3d(
+        x=xs, y=ys, z=zs,
+        i=ii, j=jj, k=kk,
+        color=color,
+        opacity=1.0,
+        name=name,
+        showlegend=False,
+        hoverinfo='name',
+        flatshading=False,
+        lighting=dict(ambient=0.6, diffuse=0.6, specular=0.2),
+    )
+
+
+def _arrow_traces(tail, tip, color, name, line_width=5,
+                  cone_size=0.07, cone_radius=None, cone_height=None):
+    """Build a 3D arrow as a Scatter3d shaft + Mesh3d cone head.
+
+    cone_radius / cone_height override cone_size when provided, allowing
+    independent control of the cone proportions (e.g. squashed/wide heads).
+    The shaft is trimmed to exactly meet the cone base.
+
+    Returns a list of traces: [shaft, head].
     tail, tip : real 3-vectors [x, y, z]
     """
     direction = subtract(tip, tail)
@@ -83,15 +148,18 @@ def _arrow_traces(tail, tip, color, name, line_width=5, cone_size=0.07):
     if mag < 1e-10:
         return []
 
-    # Shaft: line from tail to tip
-    scale = 0.8
+    # Cone dimensions — default to Plotly-like narrow proportions
+    c_height = cone_height if cone_height is not None else cone_size
+    c_radius = cone_radius if cone_radius is not None else cone_size / 3.0
+
+    # Shaft ends exactly at the cone base
+    d = normalize(direction)
+    shaft_end = subtract(tip, scale(d, c_height))
+
     shaft = go.Scatter3d(
-        # x=[tail[0], tip[0]],
-        # y=[tail[1], tip[1]],
-        # z=[tail[2], tip[2]],
-        x=[tail[0], scale * tip[0] + (1 - scale) * tail[0]],
-        y=[tail[1], scale * tip[1] + (1 - scale) * tail[1]],
-        z=[tail[2], scale * tip[2] + (1 - scale) * tail[2]],
+        x=[tail[0], shaft_end[0]],
+        y=[tail[1], shaft_end[1]],
+        z=[tail[2], shaft_end[2]],
         mode='lines',
         line=dict(color=color, width=line_width),
         name=name,
@@ -99,20 +167,9 @@ def _arrow_traces(tail, tip, color, name, line_width=5, cone_size=0.07):
         hoverinfo='name',
     )
 
-    # Head: cone at tip
-    u, v, w = direction[0], direction[1], direction[2]
-    head = go.Cone(
-        x=[tip[0]], y=[tip[1]], z=[tip[2]],
-        u=[u], v=[v], w=[w],
-        sizemode='absolute',
-        sizeref=cone_size,
-        anchor='tip',
-        colorscale=[[0, color], [1, color]],
-        showscale=False,
-        name=name,
-        showlegend=False,
-        hoverinfo='name',
-    )
+    head = _cone_mesh(tip, direction, c_radius, c_height, color, name)
+    if head is None:
+        return [shaft]
     return [shaft, head]
 
 
@@ -286,13 +343,13 @@ def make_3d_figure(result, show_ellipse=True, show_eaxes=True):
     traces += _arrow_traces(
         [0, 0, 0], q_tip,
         color=COLOR_QUANT, name='Quantization axis',
-        line_width=10, cone_size=0.15)
+        line_width=10, cone_radius=0.075, cone_height=0.15)
 
     # 4. k̂ vector (most prominent arrow)
     traces += _arrow_traces(
         k_tail, k_tip,
         color=COLOR_K_ARROW, name='k (beam)',
-        line_width=20, cone_size=0.30)
+        line_width=20, cone_radius=0.135, cone_height=0.27)
 
     # 5. ê₁, ê₂ axes (subtle, checkbox-gated)
     if show_eaxes:
