@@ -19,4 +19,4 @@ Then open [http://localhost:8050](http://localhost:8050) in your browser.
 
 ## License
 
-© 2026 Benjamin Smith
+© 2026 Benjamin Smith — License GPLv3+

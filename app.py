@@ -275,7 +275,7 @@ controls_panel = html.Div([
                 ),
                 html.Span('Help', style={'fontSize': '13px'}),
             ],
-            href='https://github.com/bdsmith147/polarization-rotation-visualizer-dash#readme',
+            href='https://github.com/bdsmith147/polariviz#readme',
             target='_blank',
             style={
                 'display': 'inline-flex',
@@ -292,7 +292,7 @@ controls_panel = html.Div([
             }),
             html.A(
                 html.Span('Feedback', style={'fontSize': '13px'}),
-            href='https://github.com/bdsmith147/polarization-rotation-visualizer-dash/issues',
+            href='https://github.com/bdsmith147/polariviz/issues',
             target='_blank',
             style={
                 'display': 'inline-flex',
