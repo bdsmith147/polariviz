@@ -103,15 +103,21 @@ function linkSlider(sliderId, inputId) {
 // 3. CAMERA HELPERS
 // ══════════════════════════════════════════════════════════════════════════════
 
+// Camera cache — keyed by div ID, populated by plotly_relayout events.
+//
+// Reading el.layout.scene.camera directly is unreliable: Plotly only
+// guarantees the SUPPLIED layout is stored there, not the live camera after
+// user rotation (especially for plots inside hidden tab panes).
+// Listening to plotly_relayout is the authoritative source, mirroring how
+// Dash uses State('plot-X', 'relayoutData') in its callbacks.
+const _cameraCache = {};
+
 /**
- * Return the current scene camera from a Plotly 3D plot, or null.
- * Plotly stores the live layout on the DOM element after the first render.
+ * Return the last known camera for a 3D plot div, or null if the user has
+ * not rotated it yet.
  */
 function getCamera(divId) {
-    const el = document.getElementById(divId);
-    if (!el || !el.layout) return null;
-    const scene = el.layout.scene;
-    return (scene && scene.camera) ? scene.camera : null;
+    return _cameraCache[divId] || null;
 }
 
 /**
@@ -122,6 +128,23 @@ function applyCamera(layout, camera) {
     if (!camera) return;
     layout.scene = layout.scene || {};
     layout.scene.camera = camera;
+}
+
+/**
+ * Attach plotly_relayout listeners to all 3D scene plots so that any camera
+ * change the user makes is captured in _cameraCache immediately.
+ * Must be called after the first Plotly.react() so the .on() method exists.
+ */
+function initCameraListeners() {
+    for (const divId of ['plot-3d', 'plot-poincare', 'plot-density']) {
+        const el = document.getElementById(divId);
+        if (!el) continue;
+        el.on('plotly_relayout', function (eventData) {
+            if (eventData && eventData['scene.camera']) {
+                _cameraCache[divId] = eventData['scene.camera'];
+            }
+        });
+    }
 }
 
 
@@ -285,7 +308,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initial render — populates all plots on page load
     updateAll();
 
-    // Attach density depth-sort listener (must happen after first render
-    // so Plotly has created the .on() method on the div element)
+    // Attach event listeners that require Plotly to have rendered first
+    initCameraListeners();
     initDensityDepthSort();
 });
