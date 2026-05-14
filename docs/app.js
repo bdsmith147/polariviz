@@ -16,6 +16,12 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 
+// ── Shared Plotly config ──────────────────────────────────────────────────────
+// responsive: true tells Plotly to attach a ResizeObserver to each plot div
+// so it redraws automatically whenever its container changes size.
+const PLOTLY_CONFIG = { responsive: true };
+
+
 // ══════════════════════════════════════════════════════════════════════════════
 // 1. TAB SWITCHING
 // ══════════════════════════════════════════════════════════════════════════════
@@ -170,15 +176,15 @@ function updateAll() {
     // ── 3D figure — preserve camera orientation across renders ────────────────
     const fig3d = make3dFigure(result);
     applyCamera(fig3d.layout, getCamera('plot-3d'));
-    Plotly.react('plot-3d', fig3d.data, fig3d.layout);
+    Plotly.react('plot-3d', fig3d.data, fig3d.layout, PLOTLY_CONFIG);
 
     // ── Level diagram ─────────────────────────────────────────────────────────
     const figLevel = makeLevelFigure(result);
-    Plotly.react('plot-level', figLevel.data, figLevel.layout);
+    Plotly.react('plot-level', figLevel.data, figLevel.layout, PLOTLY_CONFIG);
 
     // ── Transition amplitudes table ───────────────────────────────────────────
     const figAmplitudes = makeAmplitudesFigure(result);
-    Plotly.react('plot-amplitudes', figAmplitudes.data, figAmplitudes.layout);
+    Plotly.react('plot-amplitudes', figAmplitudes.data, figAmplitudes.layout, PLOTLY_CONFIG);
 
     // ── Density matrix — preserve camera; use it for depth-sort ──────────────
     const dmCamera = getCamera('plot-density');
@@ -187,20 +193,20 @@ function updateAll() {
         dmCamera ? { eye: dmCamera.eye } : null,
     );
     applyCamera(figDensity.layout, dmCamera);
-    Plotly.react('plot-density', figDensity.data, figDensity.layout);
+    Plotly.react('plot-density', figDensity.data, figDensity.layout, PLOTLY_CONFIG);
 
     // ── Polarization ellipse (2D) ─────────────────────────────────────────────
     const figEllipse = makeEllipseFigure(result);
-    Plotly.react('plot-ellipse', figEllipse.data, figEllipse.layout);
+    Plotly.react('plot-ellipse', figEllipse.data, figEllipse.layout, PLOTLY_CONFIG);
 
     // ── Poincaré sphere — preserve camera ────────────────────────────────────
     const figPoincare = makePoincareFigure(result);
     applyCamera(figPoincare.layout, getCamera('plot-poincare'));
-    Plotly.react('plot-poincare', figPoincare.data, figPoincare.layout);
+    Plotly.react('plot-poincare', figPoincare.data, figPoincare.layout, PLOTLY_CONFIG);
 
     // ── Stokes table ──────────────────────────────────────────────────────────
     const figStokes = makeStokesFigure(result);
-    Plotly.react('plot-stokes', figStokes.data, figStokes.layout);
+    Plotly.react('plot-stokes', figStokes.data, figStokes.layout, PLOTLY_CONFIG);
 }
 
 
@@ -248,7 +254,7 @@ function initDensityDepthSort() {
         newLayout.scene = Object.assign({}, el.layout.scene);
         newLayout.scene.camera = camera;
 
-        Plotly.react('plot-density', otherTraces.concat(meshTraces), newLayout);
+        Plotly.react('plot-density', otherTraces.concat(meshTraces), newLayout, PLOTLY_CONFIG);
     });
 }
 
