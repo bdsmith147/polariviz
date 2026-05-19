@@ -40,14 +40,14 @@ const COLOR_QUANT       = '#457B9D';   // blue     — quantization axis
 const COLOR_EAXES       = '#2A9D8F';   // teal     — ê₁ and ê₂
 const COLOR_ELLIPSE     = '#FF4444';   // red      — polarization ellipse in 3D
 const COLOR_SPHERE      = '#A8DADC';   // pale blue — atom cloud
-const COLOR_LAB_AXES    = '#000000';   // black    — x, y, z reference lines
+const COLOR_LAB_AXES    = '#8888A8';   // blue-gray — x, y, z reference lines
 const COLOR_SIGMA_PLUS  = '#E63946';   // red      — σ+ transitions
 const COLOR_PI          = '#2A9D8F';   // teal     — π  transitions
 const COLOR_SIGMA_MINUS = '#457B9D';   // blue     — σ- transitions
 const COLOR_BG          = '#1A1A2E';   // dark navy — figure background
 const COLOR_PAPER       = '#16213E';   // slightly lighter — paper background
 const COLOR_TEXT        = '#D3D3D3';   // light grey — plot labels and annotations
-const COLOR_LAB_AXES_TEXT = '#000000'; // black    — axis labels
+const COLOR_LAB_AXES_TEXT = '#8888A8'; // blue-gray — axis labels
 
 // ── Level diagram layout (in normalized figure units 0–1) ─────────────────────
 const LEVEL_J0_Y       = 0.15;  // y position of J=0 ground level line
