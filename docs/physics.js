@@ -280,6 +280,10 @@ function computeAll({
             E_input = cMatVecMultiply(R1, E_input);
         } else if (basisState === 'sigma_plus' || basisState === 'sigma_minus') {
             E_input = jonesFromBasisState(basisState);
+        } else if (basisState === 'horizontal') {
+            // H = linear polarisation orthogonal to V (⊥ ê₂) → y-polarised in
+            // input frame, which embeds as ê₁ after the beam-frame rotation.
+            E_input = [[0, 0], [1, 0], [0, 0]];
         } else {
             throw new Error(`Invalid basisState: ${basisState}`);
         }

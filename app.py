@@ -394,9 +394,10 @@ controls_panel = html.Div([
                                             dcc.RadioItems(
                                                 id='basis-radio',
                                                 options=[
-                                                    {'label': ' RHC', 'value': 'sigma_plus'},
-                                                    {'label': ' V',   'value': 'pi'},
-                                                    {'label': ' LHC', 'value': 'sigma_minus'},
+                                                    {'label': ' RHC',        'value': 'sigma_plus'},
+                                                    {'label': ' V',          'value': 'pi'},
+                                                    {'label': ' LHC',        'value': 'sigma_minus'},
+                                                    {'label': ' H',          'value': 'horizontal'},
                                                 ],
                                                 value='sigma_plus',
                                                 labelStyle={

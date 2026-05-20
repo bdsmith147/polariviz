@@ -821,6 +821,10 @@ def compute_all(
             E_input = c_mat_vec_multiply(R_1, E_input)
         elif basis_state == "sigma_plus" or basis_state == "sigma_minus":
             E_input = jones_from_basis_state(basis_state)
+        elif basis_state == "horizontal":
+            # H = linear polarisation orthogonal to V (⊥ ê₂) → y-polarised in
+            # input frame, which embeds as ê₁ after the beam-frame rotation.
+            E_input = [[0, 0], [1, 0], [0, 0]]
         elif basis_state is None:
             raise ValueError("basis_state must be provided when input_mode='basis'")
         else:
