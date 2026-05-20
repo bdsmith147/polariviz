@@ -190,7 +190,7 @@ def _dashed_line_trace(tail, tip, color, name, opacity=0.6, width=3):
         mode='markers',
         marker=dict(size=3, color=color, opacity=opacity),
         name=name,
-        showlegend=True,
+        showlegend=False,
         hoverinfo='name',
     )
 
@@ -359,6 +359,18 @@ def make_3d_figure(result, show_ellipse=True, show_eaxes=True):
         traces.append(_dashed_line_trace(
             e2_tail, e2_tip,
             color=COLOR_EAXES, name='ê₂', opacity=0.6))
+        # Text labels at tips
+        traces.append(go.Scatter3d(
+            x=[e1_tip[0], e2_tip[0]],
+            y=[e1_tip[1], e2_tip[1]],
+            z=[e1_tip[2], e2_tip[2]],
+            mode='text',
+            text=['ê₁', 'ê₂'],
+            textposition='top center',
+            textfont=dict(color=COLOR_EAXES, size=12),
+            showlegend=False,
+            hoverinfo='none',
+        ))
 
     # 6. Polarization ellipse (subtle, checkbox-gated)
     if show_ellipse:

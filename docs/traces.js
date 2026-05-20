@@ -189,7 +189,7 @@ function _dashedLineTrace(tail, tip, color, name, opacity = 0.6, width = 3) {
         mode: 'markers',
         marker: { size: 3, color: color, opacity: opacity },
         name: name,
-        showlegend: true,
+        showlegend: false,
         hoverinfo: 'name',
     };
 }
@@ -354,6 +354,19 @@ function make3dFigure(result, showEllipse = true, showEaxes = true) {
     if (showEaxes) {
         traces.push(_dashedLineTrace(e1Tail, e1Tip, COLOR_EAXES, 'ê₁', 0.6));
         traces.push(_dashedLineTrace(e2Tail, e2Tip, COLOR_EAXES, 'ê₂', 0.6));
+        // Text labels at tips
+        traces.push({
+            type: 'scatter3d',
+            x: [e1Tip[0], e2Tip[0]],
+            y: [e1Tip[1], e2Tip[1]],
+            z: [e1Tip[2], e2Tip[2]],
+            mode: 'text',
+            text: ['ê₁', 'ê₂'],
+            textposition: 'top center',
+            textfont: { color: COLOR_EAXES, size: 12 },
+            showlegend: false,
+            hoverinfo: 'none',
+        });
     }
 
     // 6. Polarization ellipse (subtle, checkbox-gated)
