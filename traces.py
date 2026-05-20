@@ -465,9 +465,9 @@ def make_level_figure(result):
     }
 
     labels = {
-        'plus1':  'mJ=+1  (σ+)',
-        'zero':   'mJ=0   (π)',
-        'minus1': 'mJ=-1  (σ-)',
+        'plus1':  'σ+',
+        'zero':   'π',
+        'minus1': 'σ-',
     }
     
     angles = {
@@ -598,7 +598,8 @@ def make_level_figure(result):
         legend=dict(
             font=dict(color=COLOR_TEXT, size=11),
             bgcolor='rgba(0,0,0,0)',
-            x=0.01, y=0.5,
+            x=0.99, y=0.05,
+            xanchor='right',
         ),
         showlegend=True,
     )
