@@ -394,14 +394,14 @@ controls_panel = html.Div([
                                             dcc.RadioItems(
                                                 id='basis-radio',
                                                 options=[
+                                                    {'label': ' H',   'value': 'horizontal'},
+                                                    {'label': ' D',   'value': 'diagonal'},
                                                     {'label': ' RHC', 'value': 'sigma_plus'},
                                                     {'label': ' V',   'value': 'pi'},
-                                                    {'label': ' D',   'value': 'diagonal'},
-                                                    {'label': ' LHC', 'value': 'sigma_minus'},
-                                                    {'label': ' H',   'value': 'horizontal'},
                                                     {'label': ' A',   'value': 'antidiagonal'},
+                                                    {'label': ' LHC', 'value': 'sigma_minus'},
                                                 ],
-                                                value='sigma_plus',
+                                                value='horizontal',
                                                 labelStyle={
                                                     'display': 'flex',
                                                     'alignItems': 'center',
