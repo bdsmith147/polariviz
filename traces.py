@@ -900,7 +900,7 @@ def make_amplitudes_figure(result):
     table = go.Table(
         columnwidth=[60, 90, 90, 80, 80],
         header=dict(
-            values=['<b>𝒫ᵢ</b>', '<b>Re{aᵢ}</b>', '<b>Im{aᵢ}</b>',
+            values=['<b>𝒫ᵢ</b>', '<b>Re[aᵢ]</b>', '<b>Im[aᵢ]</b>',
                     '<b>|aᵢ|</b>', '<b>∠aᵢ</b>'],
             fill_color=header_bg,
             font=dict(color='#7EC8E3', size=12),
@@ -933,7 +933,8 @@ def make_amplitudes_figure(result):
         title=dict(
             text='Transition Amplitudes<br>|𝒫⟩ = a₊|σ₊⟩ + a₀|π⟩ + a₋|σ₋⟩',
             font=dict(color=COLOR_TEXT, size=13),
-            x=0.5,
+            x=0.5, y=0.9,
+            yanchor='top',
         ),
     )
 

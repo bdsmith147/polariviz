@@ -893,7 +893,7 @@ function makeAmplitudesFigure(result) {
         type: 'table',
         columnwidth: [60, 90, 90, 80, 80],
         header: {
-            values: ['<b>𝒫ᵢ</b>', '<b>Re{aᵢ}</b>', '<b>Im{aᵢ}</b>',
+            values: ['<b>𝒫ᵢ</b>', '<b>Re[aᵢ]</b>', '<b>Im[aᵢ]</b>',
                      '<b>|aᵢ|</b>', '<b>∠aᵢ</b>'],
             fill:   { color: headerBg },
             font:   { color: '#7EC8E3', size: 12 },
@@ -926,7 +926,8 @@ function makeAmplitudesFigure(result) {
         title: {
             text: 'Transition Amplitudes<br>|𝒫⟩ = a₊|σ₊⟩ + a₀|π⟩ + a₋|σ₋⟩',
             font: { color: COLOR_TEXT, size: 13 },
-            x: 0.5,
+            x: 0.5, y: 0.9,
+            yanchor: 'top',
         },
     };
 
