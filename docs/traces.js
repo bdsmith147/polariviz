@@ -924,7 +924,7 @@ function makeAmplitudesFigure(result) {
         plot_bgcolor:  COLOR_BG,
         margin: { l: 8, r: 8, t: 60, b: 8 },
         title: {
-            text: 'Transition Amplitudes<br>|𝒫⟩ = a₊|σ₊⟩ + a₀|π⟩ + a₋|σ₋⟩',
+            text: 'Polarization Amplitudes<br>|𝒫⟩ = a₊|σ₊⟩ + a₀|π⟩ + a₋|σ₋⟩',
             font: { color: COLOR_TEXT, size: 13 },
             x: 0.5, y: 0.9,
             yanchor: 'top',

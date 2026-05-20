@@ -931,7 +931,7 @@ def make_amplitudes_figure(result):
         plot_bgcolor=COLOR_BG,
         margin=dict(l=8, r=8, t=60, b=8),
         title=dict(
-            text='Transition Amplitudes<br>|𝒫⟩ = a₊|σ₊⟩ + a₀|π⟩ + a₋|σ₋⟩',
+            text='Polarization Amplitudes<br>|𝒫⟩ = a₊|σ₊⟩ + a₀|π⟩ + a₋|σ₋⟩',
             font=dict(color=COLOR_TEXT, size=13),
             x=0.5, y=0.9,
             yanchor='top',
