@@ -825,6 +825,14 @@ def compute_all(
             # H = linear polarisation orthogonal to V (⊥ ê₂) → y-polarised in
             # input frame, which embeds as ê₁ after the beam-frame rotation.
             E_input = [[0, 0], [1, 0], [0, 0]]
+        elif basis_state == "diagonal":
+            # |D⟩ = (|H⟩ + |V⟩) / √2  — +45° linear (+S2 pole)
+            s = 1.0 / math.sqrt(2)
+            E_input = [[s, 0], [s, 0], [0, 0]]
+        elif basis_state == "antidiagonal":
+            # |A⟩ = (|H⟩ − |V⟩) / √2  — −45° linear (−S2 pole)
+            s = 1.0 / math.sqrt(2)
+            E_input = [[-s, 0], [s, 0], [0, 0]]
         elif basis_state is None:
             raise ValueError("basis_state must be provided when input_mode='basis'")
         else:

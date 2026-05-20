@@ -284,6 +284,14 @@ function computeAll({
             // H = linear polarisation orthogonal to V (⊥ ê₂) → y-polarised in
             // input frame, which embeds as ê₁ after the beam-frame rotation.
             E_input = [[0, 0], [1, 0], [0, 0]];
+        } else if (basisState === 'diagonal') {
+            // |D⟩ = (|H⟩ + |V⟩) / √2  — +45° linear (+S2 pole)
+            const s = 1.0 / Math.sqrt(2);
+            E_input = [[s, 0], [s, 0], [0, 0]];
+        } else if (basisState === 'antidiagonal') {
+            // |A⟩ = (|H⟩ − |V⟩) / √2  — −45° linear (−S2 pole)
+            const s = 1.0 / Math.sqrt(2);
+            E_input = [[-s, 0], [s, 0], [0, 0]];
         } else {
             throw new Error(`Invalid basisState: ${basisState}`);
         }
