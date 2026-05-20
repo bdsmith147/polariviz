@@ -814,7 +814,7 @@ function makeDensityFigure(result, camera = null) {
         paper_bgcolor: COLOR_PAPER,
         plot_bgcolor:  COLOR_BG,
         margin: { l: 0, r: 0, t: 30, b: 0 },
-        title: { text: 'Density Matrix', font: { color: COLOR_TEXT, size: 13 }, x: 0.5 },
+        title: { text: 'Density Matrix  |𝒫⟩⟨𝒫|', font: { color: COLOR_TEXT, size: 13 }, x: 0.5 },
         scene: {
             bgcolor: COLOR_BG,
             xaxis: {
@@ -892,8 +892,8 @@ function makeAmplitudesFigure(result) {
         type: 'table',
         columnwidth: [60, 90, 90, 80, 80],
         header: {
-            values: ['<b>ψ</b>', '<b>Re</b>', '<b>Im</b>',
-                     '<b>|ψ|</b>', '<b>Phase</b>'],
+            values: ['<b>𝒫ᵢ</b>', '<b>Re{aᵢ}</b>', '<b>Im{aᵢ}</b>',
+                     '<b>|aᵢ|</b>', '<b>∠aᵢ</b>'],
             fill:   { color: headerBg },
             font:   { color: '#7EC8E3', size: 12 },
             align:  'center',
@@ -921,9 +921,9 @@ function makeAmplitudesFigure(result) {
     const layout = {
         paper_bgcolor: COLOR_PAPER,
         plot_bgcolor:  COLOR_BG,
-        margin: { l: 8, r: 8, t: 30, b: 8 },
+        margin: { l: 8, r: 8, t: 60, b: 8 },
         title: {
-            text: 'Transition Amplitudes  |ψ⟩',
+            text: 'Transition Amplitudes<br>|𝒫⟩ = a₊|σ₊⟩ + a₀|π⟩ + a₋|σ₋⟩',
             font: { color: COLOR_TEXT, size: 13 },
             x: 0.5,
         },

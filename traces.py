@@ -823,7 +823,7 @@ def make_density_figure(result, camera=None):
         plot_bgcolor=COLOR_BG,
         margin=dict(l=0, r=0, t=30, b=0),
         title=dict(
-            text='Density Matrix',
+            text='Density Matrix  |𝒫⟩⟨𝒫|',
             font=dict(color=COLOR_TEXT, size=13),
             x=0.5,
         ),
@@ -899,8 +899,8 @@ def make_amplitudes_figure(result):
     table = go.Table(
         columnwidth=[60, 90, 90, 80, 80],
         header=dict(
-            values=['<b>ψ</b>', '<b>Re</b>', '<b>Im</b>',
-                    '<b>|ψ|</b>', '<b>Phase</b>'],
+            values=['<b>𝒫ᵢ</b>', '<b>Re{aᵢ}</b>', '<b>Im{aᵢ}</b>',
+                    '<b>|aᵢ|</b>', '<b>∠aᵢ</b>'],
             fill_color=header_bg,
             font=dict(color='#7EC8E3', size=12),
             align='center',
@@ -928,9 +928,9 @@ def make_amplitudes_figure(result):
     layout = go.Layout(
         paper_bgcolor=COLOR_PAPER,
         plot_bgcolor=COLOR_BG,
-        margin=dict(l=8, r=8, t=30, b=8),
+        margin=dict(l=8, r=8, t=60, b=8),
         title=dict(
-            text='Transition Amplitudes  |ψ⟩',
+            text='Transition Amplitudes<br>|𝒫⟩ = a₊|σ₊⟩ + a₀|π⟩ + a₋|σ₋⟩',
             font=dict(color=COLOR_TEXT, size=13),
             x=0.5,
         ),
