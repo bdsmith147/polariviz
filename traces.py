@@ -836,7 +836,7 @@ def make_density_figure(result, camera=None):
         plot_bgcolor=COLOR_BG,
         margin=dict(l=0, r=0, t=30, b=0),
         title=dict(
-            text='Density Matrix  |𝒫⟩⟨𝒫|',
+            text='Coherency Matrix  |𝒫⟩⟨𝒫|',
             font=dict(color=COLOR_TEXT, size=13),
             x=0.5,
         ),

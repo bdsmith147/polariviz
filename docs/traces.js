@@ -828,7 +828,7 @@ function makeDensityFigure(result, camera = null) {
         paper_bgcolor: COLOR_PAPER,
         plot_bgcolor:  COLOR_BG,
         margin: { l: 0, r: 0, t: 30, b: 0 },
-        title: { text: 'Density Matrix  |𝒫⟩⟨𝒫|', font: { color: COLOR_TEXT, size: 13 }, x: 0.5 },
+        title: { text: 'Coherency Matrix  |𝒫⟩⟨𝒫|', font: { color: COLOR_TEXT, size: 13 }, x: 0.5 },
         scene: {
             bgcolor: COLOR_BG,
             xaxis: {

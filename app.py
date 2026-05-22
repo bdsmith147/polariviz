@@ -489,7 +489,7 @@ density_panel = html.Div([
                 )],
             ),
             dcc.Tab(
-                label='Density Matrix',
+                label='Coherency Matrix',
                 value='density',
                 style=TAB_STYLE,
                 selected_style=TAB_SELECTED_STYLE,
