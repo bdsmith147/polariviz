@@ -53,6 +53,7 @@ where $`E_i`$ are the fully-general Cartesian electric field amplitudes in the l
 $$
 |E^\prime\rangle = E_x^\prime |x^\prime\rangle + E_y^\prime |y^\prime\rangle  + 0 |z^\prime\rangle,
 $$
+
 where $`(E_x^\prime, E_y^\prime)`$ is also known as a Jones vector.
 
 For quantum “things”, angular momentum exists in discrete quanta, and is fundamentally *directional*; we measure angular momentum projected along a certain axis through 3D space called a quantization axis $`\vec{q}`$. For atoms, usually the most convenient choice of this axis is the vector parallel to an external magnetic field. 
