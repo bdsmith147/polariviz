@@ -43,10 +43,13 @@ This app is organized into four main panels (clockwise from the upper left):
 The polarization of an electromagnetic field encodes its helicity, or its spin angular momentum projected along the propagation direction; this is similar to the well-known spin property of electrons, atoms, and other quantum particles. As the light wave propagates along some vector direction $`\vec{k}`$ through space, the electric field oscillates in a plane orthogonal to $`\vec{k}`$. In the following, Dirac notation represents column vectors compactly and cleanly, and this should not be confused with quantum mechanical ket states. 
 
 In the lab frame, the Cartesian unit vectors are $`\hat{e}_i\equiv |i\rangle`$ and the electric field vector $`\vec{E} \equiv |E\rangle`$ is
+
 $$
 |E\rangle = E_x |x\rangle + E_y |y\rangle  + E_z |z\rangle,
 $$
+
 where $`E_i`$ are the fully-general Cartesian electric field amplitudes in the lab frame. In this project, we consider fully polarized light, for example, linear, circular, or elliptical polarization. Often it’s convenient to describe the electric field in its propagation frame with unit vectors $`\hat{e}_i^\prime \equiv |i^\prime\rangle`$, where $`\hat{e}_z^\prime \parallel \vec{k}`$. Thus, the electric field in the propagation frame is
+
 $$
 |E^\prime\rangle = E_x^\prime |x^\prime\rangle + E_y^\prime |y^\prime\rangle  + 0 |z^\prime\rangle,
 $$
@@ -67,6 +70,7 @@ A representation called the **spherical basis** is ideal for describing the tran
 - $`|\pi\rangle = |z_q\rangle,`$
 
 where $`|i_q\rangle`$ are the Cartesian basis vectors in the frame of the quantization axis. In general, light can address a single transition or a superposition of the three transitions. The polarization experienced by the atoms in its quantization axis frame is
+
 $$
 |\mathcal{P}\rangle = a_+ |\sigma_+\rangle + a_0 |\pi\rangle + a_- |\sigma_-\rangle.
 $$
