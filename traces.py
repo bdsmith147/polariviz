@@ -591,7 +591,7 @@ def make_level_figure(result):
         plot_bgcolor=COLOR_BG,
         margin=dict(l=10, r=10, t=30, b=10),
         title=dict(
-            text='J=0 → J=1 Transitions',
+            text='J=0 → J=1 Intensities',
             font=dict(color=COLOR_TEXT, size=13),
             x=0.5,
         ),

@@ -590,7 +590,7 @@ function makeLevelFigure(result) {
         plot_bgcolor:  COLOR_BG,
         margin: { l: 10, r: 10, t: 30, b: 10 },
         title: {
-            text: 'J=0 → J=1 Transitions',
+            text: 'J=0 → J=1 Intensities',
             font: { color: COLOR_TEXT, size: 13 },
             x: 0.5,
         },
